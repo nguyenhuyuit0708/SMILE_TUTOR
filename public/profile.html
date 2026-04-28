@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông tin cá nhân - Smile Course</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style> .label {font-weight:600;color:#374151}</style>
+</head>
+<body class="bg-gray-100 min-h-screen py-12">
+  <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <div class="flex items-center gap-6 mb-6">
+      <div class="flex-shrink-0">
+        <img id="avatarImg" src="/image/icons_application/user.png" alt="avatar" class="w-28 h-28 rounded-full object-cover border" />
+        <div class="mt-2 text-center">
+          <button id="changeAvatarBtn" class="mt-2 btn-primary text-sm">Đổi ảnh đại diện</button>
+          <input id="avatarInput" type="file" accept="image/*" class="hidden" />
+        </div>
+      </div>
+      <div>
+        <h2 class="text-2xl brand-title">Thông tin cá nhân</h2>
+        <p class="text-gray-500">Xem và chỉnh sửa chi tiết tài khoản của bạn</p>
+      </div>
+    </div>
+
+    <div id="profileView" class="space-y-4">
+      <div>
+        <div class="label">Tên đăng nhập</div>
+        <div id="username" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Họ và tên</div>
+        <div id="fullName" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Ngày sinh</div>
+        <div id="dob" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Số điện thoại</div>
+        <div id="phone" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Email</div>
+        <div id="email" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Trường</div>
+        <div id="school" class="text-gray-700">...</div>
+      </div>
+      <div>
+        <div class="label">Khối</div>
+        <div id="grade" class="text-gray-700">...</div>
+      </div>
+    </div>
+
+    <div id="editForm" class="hidden space-y-4">
+      <div>
+        <div class="label">Họ và tên</div>
+        <input id="i_fullName" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+      </div>
+      <div>
+        <div class="label">Ngày sinh</div>
+        <input id="i_dob" type="date" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+      </div>
+      <div>
+        <div class="label">Số điện thoại</div>
+        <input id="i_phone" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+      </div>
+      <div>
+        <div class="label">Email</div>
+        <input id="i_email" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+      </div>
+      <div>
+        <div class="label">Trường</div>
+        <input id="i_school" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+      </div>
+      <div>
+        <div class="label">Khối</div>
+        <select id="i_grade" class="auth-input w-full px-4 py-2 mt-1 border rounded-md">
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-6 flex gap-3">
+      <button id="editBtn" class="btn-primary">Chỉnh sửa</button>
+      <button id="saveBtn" class="btn-primary hidden">Lưu thay đổi"i</button>
+      <button id="cancelBtn" class="btn-ghost hidden">Hủy</button>
+      <button id="showPwdBtn" class="btn-ghost">Thay đổi mật khẩu</button>
+    </div>
+
+    <div id="pwdForm" class="hidden mt-4 bg-white border p-4 rounded-md">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Mật khẩu cũ</label>
+          <input id="oldPassword" type="password" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Mật khẩu mới</label>
+          <input id="newPassword" type="password" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Nhập lại mật khẩu mới</label>
+          <input id="confirmNewPassword" type="password" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" />
+        </div>
+        <div class="flex gap-3">
+          <button id="changePwdBtn" class="btn-primary">Lưu thay đổi</button>
+          <button id="cancelPwdBtn" class="btn-ghost">Hủy</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="msg" class="mt-4 text-sm text-red-500"></p>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('myToken');
+    if (!token) { window.location.href = '/login.html'; }
+
+    async function loadProfile() {
+      // Try server endpoint first
+      try {
+        const res = await fetch('/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (res.ok) {
+          const user = await res.json();
+          render(user);
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      // Fallback: decode token payload for basic fields
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        render({ username: payload.username || '', fullName: payload.fullName || '', email: payload.email || '' });
+      } catch (e) {
+        document.getElementById('msg').innerText = 'Không thể tải thông tin người dùng.';
+      }
+    }
+
+    function render(u) {
+      document.getElementById('username').innerText = u.username || '';
+      // avatar
+      document.getElementById('avatarImg').src = u.avatar || '/image/icons_application/user.png';
+      document.getElementById('fullName').innerText = u.fullName || '';
+      document.getElementById('dob').innerText = u.dob ? new Date(u.dob).toLocaleDateString() : '';
+      document.getElementById('phone').innerText = u.phone || '';
+      document.getElementById('email').innerText = u.email || '';
+      document.getElementById('school').innerText = u.school || '';
+      document.getElementById('grade').innerText = u.grade || '';
+
+      // populate edit inputs
+      document.getElementById('i_fullName').value = u.fullName || '';
+      document.getElementById('i_dob').value = u.dob ? new Date(u.dob).toISOString().slice(0,10) : '';
+      document.getElementById('i_phone').value = u.phone || '';
+      document.getElementById('i_email').value = u.email || '';
+      document.getElementById('i_school').value = u.school || '';
+      document.getElementById('i_grade').value = u.grade || '9';
+    }
+
+    document.getElementById('editBtn').addEventListener('click', () => {
+      document.getElementById('profileView').classList.add('hidden');
+      document.getElementById('editForm').classList.remove('hidden');
+      document.getElementById('editBtn').classList.add('hidden');
+      document.getElementById('saveBtn').classList.remove('hidden');
+      document.getElementById('cancelBtn').classList.remove('hidden');
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+      document.getElementById('profileView').classList.remove('hidden');
+      document.getElementById('editForm').classList.add('hidden');
+      document.getElementById('editBtn').classList.remove('hidden');
+      document.getElementById('saveBtn').classList.add('hidden');
+      document.getElementById('cancelBtn').classList.add('hidden');
+    });
+
+    // Password change UI
+    document.getElementById('showPwdBtn').addEventListener('click', () => {
+      document.getElementById('pwdForm').classList.toggle('hidden');
+    });
+    document.getElementById('cancelPwdBtn').addEventListener('click', () => {
+      document.getElementById('pwdForm').classList.add('hidden');
+    });
+
+    document.getElementById('changePwdBtn').addEventListener('click', async () => {
+      const oldPassword = document.getElementById('oldPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmNewPassword').value;
+      if (!oldPassword || !newPassword || !confirm) { document.getElementById('msg').innerText = 'Vui lòng điền đủ các trường.'; return; }
+      if (newPassword !== confirm) { document.getElementById('msg').innerText = 'Mật khẩu mới không khớp.'; return; }
+      if (newPassword.length < 6) { document.getElementById('msg').innerText = 'Mật khẩu mới phải có ít nhất 6 ký tự.'; return; }
+      document.getElementById('msg').innerText = 'Đang cập nhật mật khẩu...';
+      try {
+        const res = await fetch('/auth/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ oldPassword, newPassword }) });
+        const txt = await res.text();
+        if (res.ok) {
+          document.getElementById('msg').className = 'mt-4 text-sm text-green-600';
+          document.getElementById('msg').innerText = txt || 'Đã đổi mật khẩu thành công.';
+          document.getElementById('pwdForm').classList.add('hidden');
+          document.getElementById('oldPassword').value = '';
+          document.getElementById('newPassword').value = '';
+          document.getElementById('confirmNewPassword').value = '';
+        } else {
+          document.getElementById('msg').className = 'mt-4 text-sm text-red-500';
+          document.getElementById('msg').innerText = txt || 'Lỗi đổi mật khẩu.';
+        }
+      } catch (err) {
+        document.getElementById('msg').innerText = 'Lỗi kết nối.';
+      }
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const body = {
+        fullName: document.getElementById('i_fullName').value.trim(),
+        dob: document.getElementById('i_dob').value || null,
+        phone: document.getElementById('i_phone').value.trim(),
+        email: document.getElementById('i_email').value.trim(),
+        school: document.getElementById('i_school').value.trim(),
+        grade: document.getElementById('i_grade').value
+      };
+
+      try {
+        const res = await fetch('/auth/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body) });
+        if (res.ok) {
+          const u = await res.json();
+          render(u);
+          document.getElementById('cancelBtn').click();
+          document.getElementById('msg').className = 'mt-4 text-sm text-green-600';
+          document.getElementById('msg').innerText = 'Cập nhật thành công.';
+        } else {
+          const txt = await res.text();
+          document.getElementById('msg').innerText = txt || 'Lỗi cập nhật.';
+        }
+      } catch (e) {
+        document.getElementById('msg').innerText = 'Lỗi kết nối.';
+      }
+    });
+
+    // Avatar change handlers
+    document.getElementById('changeAvatarBtn').addEventListener('click', () => {
+      document.getElementById('avatarInput').click();
+    });
+
+    document.getElementById('avatarInput').addEventListener('change', async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const fd = new FormData(); fd.append('avatar', f);
+      document.getElementById('msg').innerText = 'Đang tải ảnh...';
+      try {
+        const res = await fetch('/auth/avatar', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd });
+        if (res.ok) {
+          const u = await res.json();
+          document.getElementById('avatarImg').src = u.avatar || '/image/icons_application/user.png';
+          document.getElementById('msg').className = 'mt-4 text-sm text-green-600';
+          document.getElementById('msg').innerText = 'Ảnh đại diện đã cập nhật.';
+        } else {
+          const t = await res.text(); document.getElementById('msg').innerText = t || 'Lỗi tải ảnh.';
+        }
+      } catch (err) {
+        document.getElementById('msg').innerText = 'Lỗi kết nối.';
+      }
+    });
+
+    loadProfile();
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+      <div class="max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-center gap-2 mb-4">
+              <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                  onerror="this.style.display='none'">
+              <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+          </div>
+          <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+      </div>
+  </footer>
+</body>
+</html>
+

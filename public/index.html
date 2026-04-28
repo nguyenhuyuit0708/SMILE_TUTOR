@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+ <head>
+    <meta charset="UTF-8">
+    <title>Khóa Học Của Tôi - SMILE COURSE</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <nav class="bg-white shadow-md p-4 flex justify-between items-center px-8">
+        <h1 class="text-2xl font-black brand-title"><a href="/">SMILE COURSE</a></h1>
+        <div class="flex items-center space-x-4">
+            <a id="welcomeLink" href="/profile.html" class="font-medium text-gray-700"></a>
+            <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-bold">ĐĂNG XUẤT</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-8">
+        <div class="app-layout">
+            <aside class="sidebar">
+                <div class="sidebar-top">
+                    <div class="profile">
+                        <a id="profileLink" href="/profile.html" class="flex items-center space-x-4">
+                            <div
+                                class="avatar w-12 h-12 rounded-full bg-gradient-to-br from-pink-300 to-yellow-200 overflow-hidden flex items-center justify-center">
+                                <img id="avatarImg" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+                                <span id="avatarInitial" class="text-white font-bold">N</span>
+                            </div>
+                            <div class="profile-info">
+                                <div id="profileName" class="profile-name font-bold text-lg">Người dùng</div>
+                                <div id="profileUsername" class="profile-username text-sm text-gray-500">@username</div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <a class="menu-item" href="/profile.html"><span class="menu-icon">👤</span> Thông tin cá
+                            nhân</a>
+                        <a id="myCoursesLink" class="menu-item" href="#"><span class="menu-icon">📚</span> Khóa học của
+                            tôi</a>
+                        <a class="menu-item" href="/"><span class="menu-icon">📋</span> Danh sách khóa học</a>
+                        <a class="menu-item" href="/forum.html"><span class="menu-icon">🗣️</span> Diễn đàn</a>
+                        <a id="adminUsersLink" class="menu-item hidden" href="/admin-users.html"><span
+                                class="menu-icon">📋</span> Quản lý học sinh</a>
+                    </nav>
+                </div>
+
+                <div class="sidebar-sep" aria-hidden></div>
+            </aside>
+
+            <div class="content">
+                <section class="home-grid mb-12">
+                    <a href="/grade.html?slug=toan9" class="subject-tile"><span>Toán 9</span></a>
+                    <a href="/grade.html?slug=toan10" class="subject-tile"><span>Toán 10</span></a>
+                    <a href="/grade.html?slug=toan11" class="subject-tile"><span>Toán 11</span></a>
+                    <a href="/grade.html?slug=toan12" class="subject-tile"><span>Toán 12</span></a>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div>
+        <p></p>
+    </div>
+    <script>
+        const token = localStorage.getItem( 'myToken' );
+        if ( !token ) { window.location.href = "/welcome.html"; }
+
+        let payload = {};
+        try {
+            const parts = token.split( '.' );
+            if ( parts.length === 3 ) payload = JSON.parse( atob( parts[ 1 ] ) );
+        } catch ( e ) { console.error( 'invalid token', e ); }
+
+        document.getElementById( 'welcomeLink' ).innerText = payload.username ? `Hi, ${payload.username}` : 'Hi';
+
+        const profileNameEl = document.getElementById( 'profileName' );
+        const profileUsernameEl = document.getElementById( 'profileUsername' );
+        const avatarImg = document.getElementById( 'avatarImg' );
+        const avatarInitial = document.getElementById( 'avatarInitial' );
+        const myCoursesLink = document.getElementById( 'myCoursesLink' );
+
+        function updateProfileUI( user ) {
+            profileNameEl.textContent = user.fullName || user.username || 'Người dùng';
+            profileUsernameEl.textContent = user.username ? `@${user.username}` : '';
+
+            function setInitials() {
+                const source = ( user.fullName || user.username || 'U' ).trim();
+                const initials = source.split( /\s+/ ).map( s => s[ 0 ] ).filter( Boolean ).slice( 0, 2 ).join( '' ).toUpperCase();
+                avatarInitial.textContent = initials || 'U';
+                avatarImg.classList.add( 'hidden' );
+                avatarInitial.classList.remove( 'hidden' );
+            }
+
+            if ( user.avatar && user.avatar !== '/image/icons_application/user.png' ) {
+                avatarImg.src = user.avatar;
+                avatarImg.onload = () => { avatarImg.classList.remove( 'hidden' ); avatarInitial.classList.add( 'hidden' ); };
+                avatarImg.onerror = setInitials;
+            } else {
+                setInitials();
+            }
+
+            if ( user.grade ) {
+                myCoursesLink.href = '/grade.html?slug=toan' + user.grade;
+            } else {
+                myCoursesLink.href = '/';
+            }
+
+            if ( user.role === 'admin' ) {
+                const adminArea = document.getElementById( 'adminArea' );
+                if ( adminArea ) adminArea.classList.remove( 'hidden' );
+                const adminUsersLink = document.getElementById( 'adminUsersLink' );
+                if ( adminUsersLink ) adminUsersLink.classList.remove( 'hidden' );
+            }
+        }
+
+        // Initialize with payload data (if available)
+        updateProfileUI( payload );
+
+        // Fetch fresh data from server
+        fetch( '/auth/me', { headers: { 'Authorization': 'Bearer ' + token } } )
+            .then( res => res.json() )
+            .then( user => updateProfileUI( user ) )
+            .catch( err => console.error( 'Failed to load profile', err ) );
+
+        function logout() {
+            localStorage.removeItem( 'myToken' );
+            window.location.href = "/login.html";
+        }
+
+        // no admin controls on main page; please visit a folder (e.g. click Toán 9) to view or manage files.
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                    onerror="this.style.display='none'">
+                <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+            </div>
+            <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Danh sách bài học</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .rotate-180 { transform: rotate(180deg); }
+  </style>
+</head>
+<body class="bg-white min-h-screen">
+  <nav class="bg-white shadow-sm p-4 flex justify-between items-center px-8 border-b">
+    <h1 class="text-2xl font-black brand-title"><a href="/" style="color:inherit;text-decoration:none">SMILE COURSE</a></h1>
+    <div class="flex items-center space-x-4">
+        <span id="welcomeMsg" class="font-medium text-gray-700"></span>
+        <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-bold">ĐĂNG XUẤT</button>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto p-8">
+    <div class="mb-8">
+      <h2 id="courseName" class="text-3xl font-black text-gray-900 mb-2">Đang tải...</h2>
+      <p class="text-gray-500">Trang chủ / <span id="breadcrumbCourse">Khóa học</span></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-bold text-gray-800">Danh sách bài học</h3>
+        <button id="addChapterBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-bold hidden text-sm shadow transition-colors">
+          + Thêm chương mới
+        </button>
+      </div>
+
+      <div id="chaptersContainer" class="space-y-4">
+        <p class="text-gray-500 italic">Đang tải dữ liệu...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="subModal" class="fixed inset-0 bg-black bg-opacity-40 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+      <h3 id="modalTitle" class="text-lg font-bold mb-4">Tạo mới</h3>
+      <input id="modalSubName" placeholder="Nhập tên..." class="w-full px-4 py-2 rounded-md border focus:ring-2 focus:ring-blue-500 outline-none" />
+      <div class="mt-6 flex justify-end gap-3">
+        <button id="cancelSub" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md font-medium">Hủy</button>
+        <button id="confirmCreateSub" class="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-md font-medium">Tạo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('myToken');
+    if (!token) { window.location.href = '/login.html'; }
+    let payload = {};
+    try { payload = JSON.parse(atob(token.split('.')[1])); } catch(e) {}
+    
+    document.getElementById('welcomeMsg').innerText = `Chào mừng, ${payload.username || ''}`;
+
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('slug');
+    let mainFolderId = null;
+    let targetParentId = null; // Used for creating chapter or lesson
+
+    async function loadCourse() {
+      try {
+        const res = await fetch('/api/folders/slug/' + slug);
+        if (!res.ok) return document.getElementById('chaptersContainer').innerHTML = '<p class="text-red-500">Không tìm thấy khóa học</p>';
+        const folder = await res.json();
+        mainFolderId = folder._id;
+        document.getElementById('courseName').innerText = folder.name;
+        document.getElementById('breadcrumbCourse').innerText = folder.name;
+
+        if (payload.role === 'admin') {
+            document.getElementById('addChapterBtn').classList.remove('hidden');
+        }
+
+        const subsRes = await fetch('/api/folders/' + folder._id + '/subfolders');
+        const chapters = await subsRes.json();
+
+        const container = document.getElementById('chaptersContainer');
+        if (chapters.length === 0) {
+            container.innerHTML = '<p class="text-gray-500 italic">Chưa có chương nào.</p>';
+            return;
+        }
+
+        const getAdminMenuHtml = (id, type, name) => payload.role === 'admin' ? `
+            <div class="relative group/menu ml-2 z-10 hover:z-50" onclick="event.stopPropagation()">
+                <button class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                </button>
+                <div class="absolute right-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-100 z-50 invisible opacity-0 transition-all duration-200 delay-500 group-hover/menu:visible group-hover/menu:opacity-100 group-hover/menu:delay-0">
+                    <button onclick="renameFolder('${id}', '${name}', '${type}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-md font-medium border-b border-gray-100">Đổi tên</button>
+                    <button onclick="deleteFolder('${id}')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-md font-medium">Xóa ${type}</button>
+                </div>
+            </div>` : '';
+
+        container.innerHTML = chapters.map(c => `
+          <div class="bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200">
+            <div class="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-200 transition-colors group relative rounded-t-xl" onclick="toggleChapter('${c._id}')">
+              <h3 class="font-bold text-gray-800 text-base flex-1">${c.name}</h3>
+              <div class="flex items-center gap-2">
+                <svg id="icon-${c._id}" class="w-5 h-5 text-blue-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                ${getAdminMenuHtml(c._id, 'chương', c.name)}
+              </div>
+            </div>
+            <div id="content-${c._id}" class="hidden bg-white border-x border-b border-gray-100 rounded-b-xl">
+              <div id="lessons-${c._id}" class="px-6">
+                 <p class="text-gray-500 italic text-sm py-4">Đang tải...</p>
+              </div>
+              <div id="admin-${c._id}" class="hidden px-6 pb-4 pt-2 border-t border-gray-50">
+                 <button class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center gap-1" onclick="promptAddLesson('${c._id}')">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Thêm bài học
+                 </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        // Pre-fetch all lessons for faster UX, or fetch on demand. Let's fetch on demand.
+        if (payload.role === 'admin') {
+            chapters.forEach(c => {
+                document.getElementById('admin-' + c._id).classList.remove('hidden');
+            });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function toggleChapter(chapterId) {
+        const content = document.getElementById('content-' + chapterId);
+        const icon = document.getElementById('icon-' + chapterId);
+        
+        if (content.classList.contains('hidden')) {
+            // Expand
+            content.classList.remove('hidden');
+            icon.classList.add('rotate-180');
+            // Fetch lessons if not loaded yet
+            const lessonsContainer = document.getElementById('lessons-' + chapterId);
+            if (lessonsContainer.innerHTML.includes('Đang tải...')) {
+                const res = await fetch('/api/folders/' + chapterId + '/subfolders');
+                const lessons = await res.json();
+                if (lessons.length === 0) {
+                    lessonsContainer.innerHTML = '<p class="text-gray-500 italic text-sm py-4">Chưa có bài học nào.</p>';
+                } else {
+                    lessonsContainer.innerHTML = lessons.map((l, index) => `
+                        <div class="py-4 border-b border-gray-100 last:border-0 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition group relative" onclick="window.location.href='/lesson.html?id=${l._id}'">
+                            <div>
+                                <h4 class="text-gray-800 font-medium hover:text-blue-600 transition-colors">#${index+1}. ${l.name}</h4>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                ${payload.role === 'admin' ? `
+                                <div class="relative group/menu ml-2 z-10 hover:z-50" onclick="event.stopPropagation()">
+                                    <button class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                                    </button>
+                                    <div class="absolute right-0 mt-1 w-36 bg-white rounded-md shadow-lg border border-gray-100 z-50 invisible opacity-0 transition-all duration-200 delay-500 group-hover/menu:visible group-hover/menu:opacity-100 group-hover/menu:delay-0">
+                                        <button onclick="renameFolder('${l._id}', '${l.name.replace(/'/g, "\\'").replace(/"/g, "&quot;")}', 'bài học')" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-md font-medium border-b border-gray-100">Đổi tên</button>
+                                        <button onclick="deleteFolder('${l._id}')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-md font-medium">Xóa bài học</button>
+                                    </div>
+                                </div>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } else {
+            // Collapse
+            content.classList.add('hidden');
+            icon.classList.remove('rotate-180');
+        }
+    }
+
+    // Modal Logic
+    const subModal = document.getElementById('subModal');
+    const modalSubName = document.getElementById('modalSubName');
+    const modalTitle = document.getElementById('modalTitle');
+
+    document.getElementById('addChapterBtn').addEventListener('click', () => {
+        targetParentId = mainFolderId;
+        modalTitle.innerText = 'Thêm chương mới';
+        modalSubName.placeholder = 'Ví dụ: Chương 1: Logic - Tập hợp';
+        modalSubName.value = '';
+        subModal.classList.remove('hidden');
+        modalSubName.focus();
+    });
+
+    window.promptAddLesson = function(chapterId) {
+        targetParentId = chapterId;
+        modalTitle.innerText = 'Thêm bài học';
+        modalSubName.placeholder = 'Ví dụ: Bài 0101 - Đại cương về logic...';
+        modalSubName.value = '';
+        subModal.classList.remove('hidden');
+        modalSubName.focus();
+    };
+
+    document.getElementById('cancelSub').addEventListener('click', () => {
+        subModal.classList.add('hidden');
+    });
+
+    document.getElementById('confirmCreateSub').addEventListener('click', async () => {
+        const name = modalSubName.value.trim();
+        if (!name) return alert('Vui lòng nhập tên');
+        
+        try {
+            const res = await fetch('/api/folders/' + targetParentId + '/subfolders', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, 
+                body: JSON.stringify({ name }) 
+            });
+            if (res.ok) { 
+                subModal.classList.add('hidden');
+                // Reload course to reflect changes. Ideally we just re-render but reload is simplest for now.
+                location.reload(); 
+            } else { 
+                alert('Lỗi tạo: ' + await res.text()); 
+            }
+        } catch (err) {
+            alert('Lỗi kết nối');
+        }
+    });
+
+    window.renameFolder = async function(folderId, currentName, type) {
+        const newName = prompt('Nhập tên mới cho ' + type + ':', currentName);
+        if (!newName || newName.trim() === '' || newName === currentName) return;
+        
+        try {
+            const res = await fetch('/api/folders/' + folderId + '/name', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('myToken') },
+                body: JSON.stringify({ name: newName.trim() })
+            });
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Lỗi đổi tên ' + type + ': ' + await res.text());
+            }
+        } catch (err) {
+            alert('Lỗi kết nối');
+        }
+    };
+
+    window.deleteFolder = async function(folderId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa mục này? (Các thư mục con và tài liệu bên trong cũng sẽ bị xóa)')) return;
+        try {
+            const res = await fetch('/api/folders/' + folderId, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+            if (res.ok) {
+                location.reload();
+            } else {
+                alert('Lỗi xóa mục');
+            }
+        } catch(err) { alert('Lỗi kết nối'); }
+    };
+
+    function logout() { localStorage.removeItem('myToken'); window.location.href='/login.html'; }
+
+    loadCourse();
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+      <div class="max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-center gap-2 mb-4">
+              <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                  onerror="this.style.display='none'">
+              <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+          </div>
+          <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+      </div>
+  </footer>
+</body>
+</html>

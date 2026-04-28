@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký - Smile Course</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-gray-100 flex items-start justify-center min-h-screen py-12">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md mt-6">
+
+        <form id="registerForm" class="space-y-4">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl brand-title">Đăng ký tài khoản</h2>
+                <p class="text-gray-500">Gia nhập cộng đồng Smile Course</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tên đăng nhập mới</label>
+                <input type="text" id="username" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="Tên đăng nhập" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Họ và tên</label>
+                <input type="text" id="fullName" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="Họ và tên" required>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Ngày sinh</label>
+                    <input type="date" id="dob" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Số điện thoại</label>
+                    <input type="tel" id="phone" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                        placeholder="Số điện thoại" required>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="Email" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Trường</label>
+                <input type="text" id="school" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="Trường" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Khối</label>
+                <select id="grade" class="auth-input w-full px-4 py-2 mt-1 border rounded-md">
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+                <input type="password" id="password" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="mật khẩu" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nhập lại mật khẩu</label>
+                <input type="password" id="confirmPassword" class="auth-input w-full px-4 py-2 mt-1 border rounded-md"
+                    placeholder="Nhập lại mật khẩu" required>
+            </div>
+            <button type="submit" class="w-full btn-primary transition duration-300">
+                Tạo tài khoản
+            </button>
+        </form>
+
+        <p id="message" class="mt-4 text-center text-sm text-red-500"></p>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Đã có tài khoản? <a href="/login.html" class="brand-title hover:underline">Đăng nhập ngay</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById( 'registerForm' ).addEventListener( 'submit', async ( e ) => {
+            e.preventDefault();
+            const username = document.getElementById( 'username' ).value.trim();
+            const fullName = document.getElementById( 'fullName' ).value.trim();
+            const dob = document.getElementById( 'dob' ).value;
+            const phone = document.getElementById( 'phone' ).value.trim();
+            const email = document.getElementById( 'email' ).value.trim();
+            const school = document.getElementById( 'school' ).value.trim();
+            const grade = document.getElementById( 'grade' ).value;
+            const password = document.getElementById( 'password' ).value;
+            const confirm = document.getElementById( 'confirmPassword' ).value;
+
+            if ( password !== confirm ) {
+                document.getElementById( 'message' ).innerText = 'Mật khẩu không khớp.';
+                return;
+            }
+
+            const body = { username, password, fullName, dob, phone, email, school, grade };
+
+            const response = await fetch( '/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify( body )
+            } );
+
+            const result = await response.text();
+            if ( response.ok ) {
+                alert( 'Chúc mừng! Bạn đã đăng ký thành công.' );
+                window.location.href = '/login.html';
+            } else {
+                document.getElementById( 'message' ).innerText = result;
+            }
+        } );
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 text-center fixed bottom-0 left-0 right-0">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                    onerror="this.style.display='none'">
+                <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+            </div>
+            <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMILE COURSE - Nền Tảng Học Toán Thông Minh</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: [ 'Roboto', 'Outfit', 'system-ui', 'sans-serif' ],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#fff8f0',
+                            100: '#ffe6d5',
+                            500: '#FF9A86',
+                            600: '#FFB399',
+                            700: '#FFD6A6',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 0 0 rgba(37, 99, 235, 0.4)' },
+                            '50%': { opacity: '.8', boxShadow: '0 0 0 10px rgba(37, 99, 235, 0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .course-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1);
+            border-color: #bfdbfe;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+                linear-gradient(to bottom, #e5e7eb 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-gray-800 bg-white selection:bg-primary-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer"
+                    onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    <img src="/image/icons_application/S_favicon.png" alt="Logo"
+                        class="w-10 h-10 object-contain rounded-lg shadow-sm"
+                        onerror="this.src='/image/icons_application/user.png'">
+                    <span class="font-bold text-2xl tracking-tight text-primary-700">SMILE COURSE</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/login.html"
+                        class="text-gray-600 hover:text-primary-600 font-medium transition-colors">Đăng nhập</a>
+                    <a href="/register.html"
+                        class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">Đăng
+                        ký ngay</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute inset-0 bg-primary-50 transform -skew-y-3 origin-top-left -z-10"></div>
+        <div class="absolute inset-0 bg-grid-pattern opacity-[0.3] -z-10 mask-image-gradient"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center max-w-3xl mx-auto opacity-0 animate-fade-in-up">
+                <span
+                    class="inline-block py-1 px-3 rounded-full bg-primary-100 text-primary-700 font-semibold text-sm mb-6 tracking-wide uppercase">Nền
+                    tảng học toán trực tuyến</span>
+                <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-8 leading-tight">
+                    Chào mừng đến với <br />
+                    <span class="gradient-text">Trung tâm gia sư SMILE</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 mb-10 leading-relaxed">
+                    Môi trường học tập Toán học chuyên nghiệp, tương tác cao và cá nhân hóa. Chìa khóa vững vàng giúp
+                    bạn đạt điểm số tối đa trong các kỳ thi.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#courses"
+                        class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center justify-center gap-2">
+                        Khám phá khóa học
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </a>
+                    <a href="#instructor"
+                        class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-sm hover:shadow-md inline-flex items-center justify-center">
+                        Về giảng viên
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 opacity-0 animate-fade-in-up" style="animation-delay: 0.2s;">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Các khóa học nổi bật</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto">Chương trình được thiết kế bám sát sách giáo khoa và các
+                    chuyên đề nâng cao, phù hợp với mọi trình độ.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Course 1 -->
+                <a href="/login.html" class="course-card rounded-2xl p-8 block opacity-0 animate-fade-in-up"
+                    style="animation-delay: 0.3s;">
+                    <div
+                        class="w-14 h-14 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6 text-2xl font-black">
+                        9</div>
+                    <h3 class="text-xl font-bold mb-2">Toán 9</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Ôn tập toàn diện Đại số và Hình học. Luyện thi
+                        chuyển cấp vào lớp 10 chuyên và không chuyên.</p>
+                    <div class="flex items-center text-primary-600 font-semibold text-sm group">
+                        Xem chi tiết
+                        <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Course 2 -->
+                <a href="/login.html" class="course-card rounded-2xl p-8 block opacity-0 animate-fade-in-up"
+                    style="animation-delay: 0.4s;">
+                    <div
+                        class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mb-6 text-2xl font-black">
+                        10</div>
+                    <h3 class="text-xl font-bold mb-2">Toán 10</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Xây dựng nền tảng vững chắc cho chương trình
+                        THPT. Nắm trọn kiến thức Hàm số, Lượng giác.</p>
+                    <div class="flex items-center text-primary-600 font-semibold text-sm group">
+                        Xem chi tiết
+                        <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Course 3 -->
+                <a href="/login.html" class="course-card rounded-2xl p-8 block opacity-0 animate-fade-in-up"
+                    style="animation-delay: 0.5s;">
+                    <div
+                        class="w-14 h-14 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6 text-2xl font-black">
+                        11</div>
+                    <h3 class="text-xl font-bold mb-2">Toán 11</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Đột phá điểm số với các chuyên đề Tổ hợp, Xác
+                        suất, Đạo hàm và Hình học không gian.</p>
+                    <div class="flex items-center text-primary-600 font-semibold text-sm group">
+                        Xem chi tiết
+                        <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Course 4 -->
+                <a href="/login.html" class="course-card rounded-2xl p-8 block opacity-0 animate-fade-in-up"
+                    style="animation-delay: 0.6s;">
+                    <div
+                        class="w-14 h-14 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mb-6 text-2xl font-black">
+                        12</div>
+                    <h3 class="text-xl font-bold mb-2">Toán 12</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Tổng ôn luyện đề thi THPT Quốc Gia. Bí kíp
+                        giải nhanh trắc nghiệm và tối ưu thời gian làm bài.</p>
+                    <div class="flex items-center text-primary-600 font-semibold text-sm group">
+                        Xem chi tiết
+                        <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructor Section -->
+    <section id="instructor" class="py-24 bg-gray-50 relative overflow-hidden">
+        <div
+            class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-blue-100 mix-blend-multiply filter blur-3xl opacity-70">
+        </div>
+        <div
+            class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-purple-100 mix-blend-multiply filter blur-3xl opacity-70">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="p-12 lg:p-16 flex flex-col justify-center">
+                        <span class="text-primary-600 font-bold uppercase tracking-wider text-sm mb-2">Thông tin giảng
+                            viên</span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold mb-6">Thầy Nguyễn Gia Huy</h2>
+                        <div class="w-20 h-1.5 bg-primary-500 rounded-full mb-8"></div>
+                        <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+                            Với hơn nhiều năm kinh nghiệm giảng dạy và luyện thi Toán học, Thầy Gia Huy không chỉ truyền
+                            đạt kiến thức nền tảng vững chắc mà còn truyền cảm hứng, kỹ năng mềm, định hướng học tập, hướng nghiệp.
+                            Đồng hành như người anh hai trong nhà.
+                        </p>
+                        <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+                            Phương pháp giảng dạy độc quyền: <strong class="text-gray-900">"Học sâu, hiểu bản chất, giải
+                                nhanh, nhận diện dạng bài"</strong> giúp học sinh từ chỗ sợ Toán trở nên yêu thích và chinh phục được những
+                            điểm số tuyệt đối.
+                        </p>
+                        <ul class="space-y-4 mb-8">
+                            <li class="flex items-center gap-3 text-gray-700">
+                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Giảng viên luyện thi THPT Quốc Gia môn Toán</span>
+                            </li>
+                            <li class="flex items-center gap-3 text-gray-700">
+                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Tác giả của nhiều phương pháp giải nhanh nhận diện dạng bài</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        class="relative bg-gradient-to-br from-primary-100 to-indigo-100 flex items-center justify-center p-8 lg:p-12 min-h-[400px]">
+                        <!-- Picture Frame -->
+                        <div class="relative w-full max-w-sm mx-auto z-10 animate-float">
+                            <div
+                                class="absolute inset-0 bg-white shadow-2xl rounded-2xl transform rotate-3 scale-105 transition-transform hover:rotate-6">
+                            </div>
+                            <div
+                                class="absolute inset-0 bg-primary-600 shadow-xl rounded-2xl transform -rotate-2 scale-100">
+                            </div>
+                            <img src="/image/avt_profile.png" alt="Thầy Nguyễn Gia Huy"
+                                class="relative z-10 rounded-xl w-full h-auto object-cover border-4 border-white shadow-md"
+                                onerror="this.src='/image/icons_application/user.png'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 relative bg-primary-700 overflow-hidden">
+        <div
+            class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjIpIi8+PC9zdmc+')]">
+        </div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Bạn đã sẵn sàng đồng hành cùng chúng tôi?
+            </h2>
+            <p class="text-xl text-primary-100 mb-10">Các bạn khác đã thay đổi kết quả học tập. Còn bạn thì sao?
+            </p>
+            <a href="/register.html"
+                class="inline-block bg-white text-primary-700 font-extrabold text-xl px-12 py-5 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] transform hover:-translate-y-1 transition-all duration-300 animate-pulse-glow">
+                Đăng ký ngay hôm nay
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                    onerror="this.style.display='none'">
+                <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+            </div>
+            <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Observe elements to trigger animations when scrolling into view
+        const observer = new IntersectionObserver( ( entries ) => {
+            entries.forEach( entry => {
+                if ( entry.isIntersecting ) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve( entry.target );
+                }
+            } );
+        }, { threshold: 0.1 } );
+
+        document.querySelectorAll( '.animate-fade-in-up' ).forEach( el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe( el );
+        } );
+
+        // Redirect logged-in users to the dashboard instead of welcome page
+        const token = localStorage.getItem( 'myToken' );
+        if ( token ) {
+            // Verify token roughly
+            try {
+                const parts = token.split( '.' );
+                if ( parts.length === 3 ) {
+                    // Valid looking token, redirect to index
+                    window.location.href = '/index.html';
+                }
+            } catch ( e ) {}
+        }
+    </script>
+</body>
+
+</html>

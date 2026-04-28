@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>ĐĒng nhập - Smile Course</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen pb-48">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl brand-title">SMILE COURSE</h2>
+            <p class="text-gray-500">Chào mừng bạn quay trở lại!</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tên đăng nhập</label>
+                <input type="text" id="username" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" placeholder="Tên đăng nhập" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+                <input type="password" id="password" class="auth-input w-full px-4 py-2 mt-1 border rounded-md" placeholder="mật khẩu" required>
+            </div>
+            <button type="submit" class="w-full btn-primary transition duration-300">
+                Đăng nhập
+            </button>
+        </form>
+
+        <p id="message" class="mt-4 text-center text-sm text-red-500"></p>
+        
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Chưa có tài khoản? <a href="/register.html" class="brand-title hover:underline">Đăng ký ngay</a>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Chặn trang web load lại
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Gửi yêu cầu �Ēng nhập lên server
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('myToken', data.token);
+                document.getElementById('message').className = "mt-4 text-center text-sm text-green-500";
+                document.getElementById('message').innerText = "Đang chuyển hướng...";
+                setTimeout(() => { window.location.href = "/index.html"; }, 1000);
+            } else {
+                // Nếu server trả về li là chui JSON, data chính là thông báo ó
+                document.getElementById('message').innerText = data; 
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 text-center fixed bottom-0 left-0 right-0">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                    onerror="this.style.display='none'">
+                <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+            </div>
+            <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+</body>
+</html>

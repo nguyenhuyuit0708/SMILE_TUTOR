@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Dashboard</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Khu vực quản trị - chỉ Admin mới truy cập được.</p>
+  </header>
+
+  <main class="container">
+    <section class="editor-area">
+      <div class="lesson-meta">
+        <h2>Chào mừng, Admin</h2>
+        <p class="desc">Tại đây bạn có thể quản lý nội dung, tải tài liệu lên, v.v.</p>
+      </div>
+
+      <div class="output">
+        <h3>Hành động</h3>
+        <p id="status">Kiểm tra quyền truy cập...</p>
+        <p><a id="logout" href="/logout">Đăng xuất</a></p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Lấy token từ localStorage (được trả bởi /login)
+    const token = localStorage.getItem('myToken');
+    if (!token) {
+      alert('Bạn chưa đăng nhập.');
+      window.location.href = '/login.html';
+    } else {
+      fetch('/api/check-admin', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.ok) {
+            document.getElementById('status').innerText = 'Bạn là Admin đã truy cập được phép.';
+          } else {
+            alert('Bạn không có quyền truy cập admin.');
+            window.location.href = '/login.html';
+          }
+        }).catch(()=>{
+          alert('Lỗi kết nối.');
+          window.location.href = '/login.html';
+        });
+    }
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+      <div class="max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-center gap-2 mb-4">
+              <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                  onerror="this.style.display='none'">
+              <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+          </div>
+          <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+      </div>
+  </footer>
+</body>
+</html>

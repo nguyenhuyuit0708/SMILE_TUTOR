@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quản lý học sinh</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50">
+  <nav class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Quản lý học sinh</h1>
+    <div>
+      <a href="/" class="text-sm text-blue-600">Về trang chính</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto p-6">
+    <div class="mb-4">
+      <input id="searchInput" type="search" placeholder="Tìm kiếm theo username hoặc tên" class="border p-2 w-full" />
+    </div>
+
+    <div id="usersWrap" class="bg-white shadow rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left">Username</th>
+            <th class="px-4 py-2 text-left">Họ và tên</th>
+            <th class="px-4 py-2 text-left">Email</th>
+            <th class="px-4 py-2 text-left">Role</th>
+            <th class="px-4 py-2"></th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody" class="bg-white divide-y divide-gray-100">
+          <tr><td colspan="5" class="p-4 text-gray-500">Đang tải...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Edit modal -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center">
+    <div class="bg-white rounded shadow-lg w-full max-w-2xl p-6">
+      <h2 class="text-lg font-semibold mb-4">Chỉnh sửa học sinh</h2>
+      <form id="editForm" class="space-y-3">
+        <input type="hidden" id="editId">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm">Username</label>
+            <input id="editUsername" class="w-full border p-2 bg-gray-100" readonly />
+          </div>
+          <div>
+            <label class="text-sm">Role</label>
+            <select id="editRole" class="w-full border p-2">
+              <option value="hoc_tro">hoc_tro</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm">Họ và tên</label>
+            <input id="editFullName" class="w-full border p-2" />
+          </div>
+          <div>
+            <label class="text-sm">Ngày sinh</label>
+            <input id="editDob" type="date" class="w-full border p-2" />
+          </div>
+          <div>
+            <label class="text-sm">Số điện thoại</label>
+            <input id="editPhone" class="w-full border p-2" />
+          </div>
+          <div>
+            <label class="text-sm">Email</label>
+            <input id="editEmail" class="w-full border p-2" />
+          </div>
+          <div>
+            <label class="text-sm">Trường</label>
+            <input id="editSchool" class="w-full border p-2" />
+          </div>
+          <div>
+            <label class="text-sm">Khối</label>
+            <select id="editGrade" class="w-full border p-2">
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-sm">Mật khẩu mới (Để trống nếu không đổi)</label>
+          <input id="editNewPassword" type="password" class="w-full border p-2" />
+        </div>
+
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="cancelBtn" class="px-4 py-2">Hủy</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/admin-users.js"></script>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-12 text-center">
+      <div class="max-w-7xl mx-auto px-4">
+          <div class="flex items-center justify-center gap-2 mb-4">
+              <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                  onerror="this.style.display='none'">
+              <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+          </div>
+          <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+      </div>
+  </footer>
+</body>
+</html>
+

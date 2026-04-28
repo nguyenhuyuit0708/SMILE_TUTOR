@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diễn đàn - SMILE COURSE</title>
+    <link rel="icon" type="image/png" href="/image/icons_application/S_favicon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white shadow-md p-4 flex justify-between items-center px-8">
+        <h1 class="text-2xl font-black brand-title"><a href="/">SMILE COURSE</a></h1>
+        <div class="flex items-center space-x-4">
+            <span id="welcomeLink" class="font-medium text-gray-700"></span>
+            <button onclick="logout()" class="text-red-500 hover:text-red-700 text-sm font-bold">ĐĂNG XUẤT</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-8">
+        <div class="mb-8">
+            <h2 class="text-4xl font-black text-gray-900 mb-2">🗣️ Diễn đàn Cộng đồng</h2>
+            <p class="text-gray-600">Đặt câu hỏi, chia sẻ kiến thức và học hỏi từ cộng đồng</p>
+        </div>
+
+        <!-- Create Post Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">📝 Đăng câu hỏi mới</h3>
+            <form id="postForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu đề</label>
+                    <input type="text" id="postTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nhập tiêu đề câu hỏi của bạn..." required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung</label>
+                    <textarea id="postContent" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Viết chi tiết câu hỏi hoặc chia sẻ kiến thức..." rows="4" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh (tùy chọn)</label>
+                    <input type="file" id="postImage" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <div id="imagePreview" class="mt-2 hidden">
+                        <img id="previewImg" src="" alt="Preview" class="max-w-xs max-h-40 rounded-lg">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary w-full py-3 font-bold text-white rounded-lg">Đăng câu hỏi</button>
+            </form>
+        </div>
+
+        <!-- Posts List -->
+        <div class="space-y-6">
+            <h3 class="text-lg font-bold text-gray-800">📌 Các câu hỏi gần đây</h3>
+            <div id="postsList" class="space-y-4">
+                <p class="text-gray-500 italic">Đang tải dữ liệu...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Reply Modal -->
+    <div id="replyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Trả lời câu hỏi</h3>
+                <button onclick="closeReplyModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+
+            <div id="postDetail" class="mb-6 pb-6 border-b border-gray-200">
+                <!-- Post details will be filled here -->
+            </div>
+
+            <form id="replyForm" class="space-y-4">
+                <input type="hidden" id="replyPostId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung trả lời</label>
+                    <textarea id="replyContent" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Viết câu trả lời của bạn..." rows="4" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hình ảnh (tùy chọn)</label>
+                    <input type="file" id="replyImage" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <div id="replyImagePreview" class="mt-2 hidden">
+                        <img id="replyPreviewImg" src="" alt="Preview" class="max-w-xs max-h-40 rounded-lg">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="btn-primary px-6 py-2 font-bold text-white rounded-lg flex-1">Gửi trả lời</button>
+                    <button type="button" onclick="closeReplyModal()" class="px-6 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 text-center mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <img src="/image/icons_application/S_favicon.png" alt="Logo" class="w-8 h-8 opacity-75"
+                    onerror="this.style.display='none'">
+                <span class="text-white font-bold text-xl tracking-wider">SMILE COURSE</span>
+            </div>
+            <p>&copy; 2026 Trung tâm gia sư SMILE. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script>
+        const token = localStorage.getItem('myToken');
+        if (!token) { window.location.href = '/login.html'; }
+
+        let payload = {};
+        try {
+            payload = JSON.parse(atob(token.split('.')[1]));
+        } catch (e) { }
+
+        document.getElementById('welcomeLink').innerText = payload.username ? `Hi, ${payload.username}` : 'Hi';
+
+        // Load posts
+        async function loadPosts() {
+            try {
+                const res = await fetch('/api/forum/posts');
+                const posts = await res.json();
+                renderPosts(posts);
+            } catch (err) {
+                console.error('Error loading posts:', err);
+                document.getElementById('postsList').innerHTML = '<p class="text-red-500">Lỗi tải dữ liệu</p>';
+            }
+        }
+
+        function renderPosts(posts) {
+            const container = document.getElementById('postsList');
+            if (posts.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic">Chưa có câu hỏi nào. Hãy là người đầu tiên đăng!</p>';
+                return;
+            }
+
+            container.innerHTML = posts.map(post => {
+                const canDelete = payload.id === post.authorId || payload.role === 'admin';
+                return `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center gap-3 flex-1">
+                            <img src="${post.authorAvatar || '/image/icons_application/user.png'}" alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-gray-200">
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900">${escapeHtml(post.title)}</h4>
+                                <p class="text-sm text-gray-500 mt-1">👤 ${escapeHtml(post.author)} • ${new Date(post.createdAt).toLocaleDateString('vi-VN')}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">${post.replies.length} trả lời</span>
+                            ${canDelete ? `<button onclick="deletePost('${post._id}')" class="text-red-500 hover:text-red-700 text-sm font-bold">✕</button>` : ''}
+                        </div>
+                    </div>
+
+                    <p class="text-gray-700 mb-3">${escapeHtml(post.content.substring(0, 150))}${post.content.length > 150 ? '...' : ''}</p>
+
+                    ${post.image ? `<img src="${post.image}" alt="Post image" class="w-full max-h-64 object-cover rounded-lg mb-3">` : ''}
+
+                    <button onclick="openReplyModal('${post._id}')" class="text-orange-600 hover:text-orange-700 font-semibold text-sm">💬 Xem & trả lời</button>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Post Form
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('postTitle').value.trim();
+            const content = document.getElementById('postContent').value.trim();
+            const imageFile = document.getElementById('postImage').files[0];
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+            if (imageFile) formData.append('image', imageFile);
+
+            try {
+                const res = await fetch('/api/forum/posts', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Đăng câu hỏi thành công!');
+                    document.getElementById('postForm').reset();
+                    document.getElementById('imagePreview').classList.add('hidden');
+                    loadPosts();
+                } else {
+                    alert('Lỗi: ' + await res.text());
+                }
+            } catch (err) {
+                alert('Lỗi kết nối: ' + err.message);
+            }
+        });
+
+        // Image preview for post
+        document.getElementById('postImage').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('previewImg').src = event.target.result;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Reply Modal
+        async function openReplyModal(postId) {
+            try {
+                const res = await fetch('/api/forum/posts/' + postId);
+                const post = await res.json();
+
+                document.getElementById('replyPostId').value = postId;
+                
+                // Show post detail
+                const canDeletePost = payload.id === post.authorId || payload.role === 'admin';
+                document.getElementById('postDetail').innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <img src="${post.authorAvatar || '/image/icons_application/user.png'}" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-gray-200">
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900">${escapeHtml(post.title)}</h4>
+                                <p class="text-sm text-gray-500">👤 ${escapeHtml(post.author)} • ${new Date(post.createdAt).toLocaleDateString('vi-VN')} ${canDeletePost ? '<button onclick="deletePost(\'' + post._id + '\')" class="text-red-500 hover:text-red-700 text-sm font-bold ml-2">✕ Xóa</button>' : ''}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">${escapeHtml(post.content)}</p>
+                        ${post.image ? `<img src="${post.image}" alt="Post" class="w-full max-h-64 object-cover rounded-lg mt-3">` : ''}
+                    </div>
+
+                    <h5 class="text-lg font-bold text-gray-900 mt-4 mb-2">💬 Các trả lời (${post.replies.length})</h5>
+                    <div class="space-y-3 max-h-64 overflow-y-auto">
+                        ${post.replies.length === 0 ? '<p class="text-gray-500 italic">Chưa có trả lời nào</p>' : ''}
+                        ${post.replies.map(reply => `
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <img src="${reply.authorAvatar || '/image/icons_application/user.png'}" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700">👤 ${escapeHtml(reply.author)}</p>
+                                        <p class="text-xs text-gray-500">${new Date(reply.createdAt).toLocaleDateString('vi-VN')}</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-700 text-sm">${escapeHtml(reply.content)}</p>
+                                ${reply.image ? `<img src="${reply.image}" alt="Reply" class="w-full max-h-40 object-cover rounded-lg mt-2">` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                document.getElementById('replyModal').classList.remove('hidden');
+                document.getElementById('replyContent').focus();
+            } catch (err) {
+                alert('Lỗi tải bài viết: ' + err.message);
+            }
+        }
+
+        function closeReplyModal() {
+            document.getElementById('replyModal').classList.add('hidden');
+            document.getElementById('replyForm').reset();
+            document.getElementById('replyImagePreview').classList.add('hidden');
+        }
+
+        // Image preview for reply
+        document.getElementById('replyImage').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    document.getElementById('replyPreviewImg').src = event.target.result;
+                    document.getElementById('replyImagePreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Reply Form
+        document.getElementById('replyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const postId = document.getElementById('replyPostId').value;
+            const content = document.getElementById('replyContent').value.trim();
+            const imageFile = document.getElementById('replyImage').files[0];
+
+            const formData = new FormData();
+            formData.append('content', content);
+            if (imageFile) formData.append('image', imageFile);
+
+            try {
+                const res = await fetch('/api/forum/posts/' + postId + '/replies', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Trả lời thành công!');
+                    document.getElementById('replyForm').reset();
+                    loadPosts();
+                    closeReplyModal();
+                } else {
+                    alert('Lỗi: ' + await res.text());
+                }
+            } catch (err) {
+                alert('Lỗi kết nối: ' + err.message);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('myToken');
+            window.location.href = '/login.html';
+        }
+
+        // Delete post function
+        window.deletePost = async function(postId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa bài viết này?')) return;
+
+            try {
+                const res = await fetch('/api/forum/posts/' + postId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    alert('Xóa bài viết thành công!');
+                    loadPosts();
+                    closeReplyModal();
+                } else {
+                    alert('Lỗi: ' + await res.text());
+                }
+            } catch (err) {
+                alert('Lỗi kết nối: ' + err.message);
+            }
+        };
+
+        loadPosts();
+    </script>
+</body>
+</html>
