@@ -13,7 +13,7 @@
   async function loadUsers(){
     usersTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-gray-500">Đang tải...</td></tr>';
     try{
-      const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } });
+      const res = await fetch('/api/test/users', { headers: { 'Authorization': 'Bearer ' + token } });
       if (!res.ok) throw new Error('Không lấy được danh sách');
       users = await res.json();
       renderUsers(users);
