@@ -13,7 +13,7 @@
   async function loadUsers(){
     usersTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-gray-500">Đang tải...</td></tr>';
     try{
-      const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } });
+      const res = await fetch('/api/test/users', { headers: { 'Authorization': 'Bearer ' + token } });
       if (!res.ok) throw new Error('Không lấy được danh sách');
       users = await res.json();
       renderUsers(users);
@@ -94,7 +94,7 @@
     if (newPassword && newPassword.length > 0) payload.newPassword = newPassword;
 
     try{
-      const res = await fetch('/api/admin/users/' + id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const res = await fetch('/api/test/users/' + id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!res.ok) {
         const txt = await res.text(); throw new Error(txt || 'Lỗi server');
       }
