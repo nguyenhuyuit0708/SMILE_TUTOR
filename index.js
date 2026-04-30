@@ -603,6 +603,15 @@ app.put('/api/admin/users/:id', protectAdmin, async (req, res) => {
             user.password = hash;
         }
 
+        // Convert dob to Date if provided
+        if (req.body.dob && req.body.dob !== '') {
+            const dobDate = new Date(req.body.dob);
+            if (isNaN(dobDate.getTime())) {
+                return res.status(400).send('Ngày sinh không hợp lệ');
+            }
+            user.dob = dobDate;
+        }
+
         // basic validation for grade and role
         if (user.grade && !['9','10','11','12'].includes(String(user.grade))) {
             return res.status(400).send('Khối không hợp lệ');
