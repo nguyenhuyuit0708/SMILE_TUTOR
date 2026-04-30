@@ -54,7 +54,7 @@
     try{
       const res = await fetch('/api/test/users/' + id, { headers: { 'Authorization': 'Bearer ' + token } });
       if (!res.ok) throw new Error('Không tải được người dùng');
-      const u = await res.json();
+      const u = await res.json();//adasds
       document.getElementById('editId').value = u._id || '';
       document.getElementById('editUsername').value = u.username || '';
       document.getElementById('editRole').value = u.role || 'hoc_tro';
